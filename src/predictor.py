@@ -20,7 +20,8 @@ import yfinance as yf
 from sklearn.linear_model import LinearRegression
 
 
-def fetch_intraday(ticker: str, minutes: int = 20) -> pd.DataFrame:
+def fetch_intraday(ticker: str, minutes: int = 20) -> tuple:
+    """Fetch intraday data and return both extended and recent windows."""
     t = yf.Ticker(ticker)
     # Try to get 1m data for today (yfinance offers limited intraday window)
     df = t.history(period="1d", interval="1m", actions=False)
@@ -29,8 +30,19 @@ def fetch_intraday(ticker: str, minutes: int = 20) -> pd.DataFrame:
     # Ensure index is timezone-naive for plotting convenience
     if isinstance(df.index, pd.DatetimeIndex):
         df = df.tz_convert(None) if df.index.tz is not None else df
-    last = df.tail(minutes)
-    return last
+    
+    # Get last 4 hours + 20 mins for chart display
+    extended_window = max(280, len(df))  # 4 hours 20 mins = 260 minutes, plus buffer
+    df_extended = df.tail(extended_window)
+    
+    # Get last 20 minutes for analysis
+    df_recent = df.tail(minutes)
+    
+    # Calculate day's high and low
+    day_high = float(df["High"].max())
+    day_low = float(df["Low"].min())
+    
+    return df_recent, df_extended, day_high, day_low
 
 
 def fetch_4hour(ticker: str, days: int = 5) -> pd.DataFrame:
@@ -139,25 +151,29 @@ def rule_based_prediction_4h(features_4h: dict, current_price: float):
 
     prediction = "Up" if score >= 2 else "Down"
 
-    # Day trading strategy: 2% stop-loss, 4% take-profit for Up
-    # For Down: 1.5% stop-loss, 3% take-profit (more conservative)
+    # Day trading strategy: 
+    # For Up (Long): 2% stop-loss below, 4% take-profit above
+    # For Down (Short): 5% stop-loss above, 5% take-profit below
     if prediction == "Up":
         stop_loss_4h = current_price * (1 - 0.02)
         take_profit_4h = current_price * (1 + 0.04)
     else:
-        stop_loss_4h = current_price * (1 + 0.015)  # Above price for short
-        take_profit_4h = current_price * (1 - 0.03)  # Below price for short
+        stop_loss_4h = current_price * (1 + 0.05)  # Above price for short (-5%)
+        take_profit_4h = current_price * (1 - 0.05)  # Below price for short (+5%)
 
     return {"prediction": prediction, "score": score, "reasons": reasons, "stop_loss": stop_loss_4h, "take_profit": take_profit_4h}
 
 
-def plot_intraday(df_min: pd.DataFrame, ticker: str, stop: float, take: float, prediction: str):
+def plot_intraday(df_min: pd.DataFrame, df_extended: pd.DataFrame, ticker: str, stop: float, take: float, prediction: str, day_high: float, day_low: float):
     plt.style.use("default")
-    fig, ax = plt.subplots(figsize=(14, 7))
+    fig, ax = plt.subplots(figsize=(16, 8))
     ax.grid(True, alpha=0.3)
     
-    # Plot historical price
-    ax.plot(df_min.index, df_min["Close"], label="Close Price", color="tab:blue", linewidth=2, marker="o", markersize=4)
+    # Plot full extended price (last 4 hours 20 mins)
+    ax.plot(df_extended.index, df_extended["Close"], label="Price (Last 4h 20m)", color="tab:blue", linewidth=2, marker="o", markersize=3, alpha=0.7)
+    
+    # Highlight recent 20 minutes in bold
+    ax.plot(df_min.index, df_min["Close"], label="Price (Last 20m - Analysis)", color="darkblue", linewidth=3, marker="o", markersize=5)
     
     # Calculate trend for next 10 minutes
     prices = df_min["Close"].values
@@ -175,28 +191,32 @@ def plot_intraday(df_min: pd.DataFrame, ticker: str, stop: float, take: float, p
     
     # Plot projection with color based on prediction
     projection_color = (0.2, 0.8, 0.2) if prediction == "Up" else (0.8, 0.2, 0.2)
-    ax.plot(future_index, future_prices, label="10-min Projection", color=projection_color, linewidth=2, linestyle="--", marker="s", markersize=5, alpha=0.8)
+    ax.plot(future_index, future_prices, label="10-min Projection", color=projection_color, linewidth=2.5, linestyle="--", marker="s", markersize=6, alpha=0.8)
     
     # Mark current price
-    ax.scatter(df_min.index[-1], df_min["Close"].iloc[-1], color="blue", s=100, zorder=5, label="Current Price")
+    ax.scatter(df_min.index[-1], df_min["Close"].iloc[-1], color="darkblue", s=150, zorder=5, label="Current Price", edgecolors="black", linewidth=2)
     
     # Mark projected endpoint
-    ax.scatter(future_index[-1], future_prices[-1], color=projection_color, s=150, marker="*", zorder=6, label=f"Projected 10-min ({prediction})")
+    ax.scatter(future_index[-1], future_prices[-1], color=projection_color, s=200, marker="*", zorder=6, label=f"Projected 10-min ({prediction})", edgecolors="black", linewidth=1.5)
+    
+    # Add day's high and low lines
+    ax.axhline(day_high, color="green", linestyle=":", linewidth=2, label=f"Day High: ${day_high:.2f}", alpha=0.7)
+    ax.axhline(day_low, color="red", linestyle=":", linewidth=2, label=f"Day Low: ${day_low:.2f}", alpha=0.7)
     
     # Add stop-loss and take-profit lines
-    ax.axhline(stop, color="red", linestyle="--", linewidth=1.5, label="Stop-loss (5%)")
-    ax.axhline(take, color="green", linestyle="--", linewidth=1.5, label="Take-profit (10%)")
+    ax.axhline(stop, color="darkred", linestyle="--", linewidth=1.5, label=f"Stop-loss (5%): ${stop:.2f}")
+    ax.axhline(take, color="darkgreen", linestyle="--", linewidth=1.5, label=f"Take-profit (10%): ${take:.2f}")
     
     # Add shaded regions for buy/sell zones
     if prediction == "Up":
-        ax.fill_between(df_min.index, df_min["Close"].min() - 10, df_min["Close"].max() + 10, alpha=0.05, color="green", label="Buy Zone")
+        ax.fill_between(df_extended.index, df_extended["Close"].min() - 10, df_extended["Close"].max() + 10, alpha=0.02, color="green")
     else:
-        ax.fill_between(df_min.index, df_min["Close"].min() - 10, df_min["Close"].max() + 10, alpha=0.05, color="red", label="Sell Zone")
+        ax.fill_between(df_extended.index, df_extended["Close"].min() - 10, df_extended["Close"].max() + 10, alpha=0.02, color="red")
     
-    ax.set_title(f"{ticker} — Last {len(df_min)} minutes + 10-min Projection — Prediction: {prediction}", fontsize=14, fontweight="bold")
+    ax.set_title(f"{ticker} — Last 4h 20m + 10-min Projection — Prediction: {prediction}", fontsize=15, fontweight="bold")
     ax.set_xlabel("Time", fontsize=12)
     ax.set_ylabel("Price ($)", fontsize=12)
-    ax.legend(loc="best", fontsize=10)
+    ax.legend(loc="best", fontsize=9, ncol=2)
     
     # Format x-axis nicely
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
@@ -204,7 +224,7 @@ def plot_intraday(df_min: pd.DataFrame, ticker: str, stop: float, take: float, p
     plt.tight_layout()
     out_path = f"{ticker}_intraday.png"
     plt.savefig(out_path, dpi=150)
-    print(f"Saved chart to {out_path}")
+    print(f"Saved detailed chart to {out_path}")
     plt.show()
 
 
@@ -272,7 +292,7 @@ def main(argv=None):
     print(f"Fetching data for {ticker}...")
 
     try:
-        df_min = fetch_intraday(ticker, minutes=args.minutes)
+        df_min, df_extended, day_high, day_low = fetch_intraday(ticker, minutes=args.minutes)
         df_daily = fetch_daily(ticker)
         df_4h = fetch_4hour(ticker)
     except Exception as e:
@@ -291,6 +311,7 @@ def main(argv=None):
     print("="*60)
     print(f"Ticker: {ticker}")
     print(f"Current price: {current_price:.4f}")
+    print(f"Day High: {day_high:.4f} | Day Low: {day_low:.4f}")
     print(f"20d SMA: {sma20:.4f}, 50d SMA: {sma50:.4f}")
     print(f"Intraday last-return (over window): {features['last_return']:.6f}")
     print(f"Intraday slope: {features['slope']:.6f}")
@@ -318,14 +339,14 @@ def main(argv=None):
     if result_4h['prediction'] == "Up":
         print(f"Strategy: LONG (Buy)")
         print(f"Entry: {current_price:.4f}")
-        print(f"Stop-loss (2%): {result_4h['stop_loss']:.4f}")
-        print(f"Take-profit (4%): {result_4h['take_profit']:.4f}")
+        print(f"Stop-loss (-2%): {result_4h['stop_loss']:.4f}")
+        print(f"Take-profit (+4%): {result_4h['take_profit']:.4f}")
         print(f"Risk/Reward Ratio: 1:{(result_4h['take_profit'] - current_price) / (current_price - result_4h['stop_loss']):.2f}")
     else:
         print(f"Strategy: SHORT (Sell)")
         print(f"Entry: {current_price:.4f}")
-        print(f"Stop-loss (1.5%): {result_4h['stop_loss']:.4f}")
-        print(f"Take-profit (3%): {result_4h['take_profit']:.4f}")
+        print(f"Stop-loss (+5%): {result_4h['stop_loss']:.4f}")
+        print(f"Take-profit (-5%): {result_4h['take_profit']:.4f}")
         print(f"Risk/Reward Ratio: 1:{(current_price - result_4h['take_profit']) / (result_4h['stop_loss'] - current_price):.2f}")
 
     print("\n" + "="*60)
@@ -333,7 +354,7 @@ def main(argv=None):
     print("="*60)
     print(f"20-min prediction: {result['prediction']} | 4-hour prediction: {result_4h['prediction']}")
 
-    plot_intraday(df_min, ticker, result["stop_loss"], result["take_profit"], result["prediction"])
+    plot_intraday(df_min, df_extended, ticker, result["stop_loss"], result["take_profit"], result["prediction"], day_high, day_low)
     plot_4h(df_4h, ticker, result_4h["prediction"])
 
 
