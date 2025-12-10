@@ -1,8 +1,10 @@
-"""Enhanced market predictor with improved strategy.
+"""Enhanced market predictor with multiple technical indicators.
 
-This module includes multiple technical indicators and machine learning
-for better prediction accuracy.
+This module provides multi-indicator technical analysis for improved prediction
+accuracy using weighted scoring across 7 different technical indicators.
 """
+
+from typing import Dict, Tuple
 
 import pandas as pd
 import numpy as np
@@ -10,11 +12,20 @@ import yfinance as yf
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import StandardScaler
 import warnings
-warnings.filterwarnings('ignore')
+
+warnings.filterwarnings("ignore")
 
 
 def fetch_4hour_data(ticker: str, days: int = 90) -> pd.DataFrame:
-    """Fetch 4-hour OHLCV data."""
+    """Fetch 4-hour OHLCV data.
+    
+    Args:
+        ticker: Ticker symbol
+        days: Number of days of historical data (default 90)
+    
+    Returns:
+        DataFrame with 4-hour OHLCV data
+    """
     t = yf.Ticker(ticker)
     df = t.history(period=f"{days}d", interval="4h", actions=False)
     if df.empty:
@@ -54,7 +65,15 @@ def calculate_bollinger_bands(df: pd.DataFrame, period: int = 20, num_std: float
 
 
 def calculate_atr(df: pd.DataFrame, period: int = 14) -> pd.Series:
-    """Calculate Average True Range."""
+    """Calculate Average True Range for volatility measurement.
+    
+    Args:
+        df: DataFrame with OHLCV data
+        period: ATR period (default 14)
+    
+    Returns:
+        Series with ATR values
+    """
     high_low = df["High"] - df["Low"]
     high_close = abs(df["High"] - df["Close"].shift())
     low_close = abs(df["Low"] - df["Close"].shift())
@@ -66,7 +85,15 @@ def calculate_atr(df: pd.DataFrame, period: int = 14) -> pd.Series:
 
 
 def calculate_adx(df: pd.DataFrame, period: int = 14) -> pd.Series:
-    """Calculate Average Directional Index (simplified)."""
+    """Calculate Average Directional Index (trend strength).
+    
+    Args:
+        df: DataFrame with OHLCV data
+        period: ADX period (default 14)
+    
+    Returns:
+        Series with ADX values
+    """
     high_diff = df["High"].diff()
     low_diff = -df["Low"].diff()
     
@@ -85,8 +112,18 @@ def calculate_adx(df: pd.DataFrame, period: int = 14) -> pd.Series:
     return adx
 
 
-def calculate_stochastic(df: pd.DataFrame, period: int = 14, smooth_k: int = 3, smooth_d: int = 3) -> tuple:
-    """Calculate Stochastic Oscillator."""
+def calculate_stochastic(df: pd.DataFrame, period: int = 14, smooth_k: int = 3, smooth_d: int = 3) -> Tuple[pd.Series, pd.Series]:
+    """Calculate Stochastic Oscillator.
+    
+    Args:
+        df: DataFrame with OHLCV data
+        period: Stochastic period (default 14)
+        smooth_k: K smoothing period (default 3)
+        smooth_d: D smoothing period (default 3)
+    
+    Returns:
+        Tuple of (k_percent_smooth, d_percent)
+    """
     low_min = df["Low"].rolling(window=period).min()
     high_max = df["High"].rolling(window=period).max()
     
@@ -97,8 +134,18 @@ def calculate_stochastic(df: pd.DataFrame, period: int = 14, smooth_k: int = 3, 
     return k_percent_smooth, d_percent
 
 
-def compute_enhanced_features(df: pd.DataFrame) -> dict:
-    """Compute multiple technical indicators."""
+def compute_enhanced_features(df: pd.DataFrame) -> Dict[str, float]:
+    """Compute multiple technical indicators for analysis.
+    
+    Calculates 20 different features including trend, momentum, volatility,
+    moving averages, RSI, MACD, Bollinger Bands, ATR, ADX, and Stochastic.
+    
+    Args:
+        df: DataFrame with OHLCV data
+    
+    Returns:
+        Dict with 20 indicator values
+    """
     
     # Trend indicators
     prices = df["Close"].values
@@ -175,8 +222,22 @@ def compute_enhanced_features(df: pd.DataFrame) -> dict:
     }
 
 
-def enhanced_prediction(features: dict) -> dict:
-    """Generate enhanced prediction using multiple indicators."""
+def enhanced_prediction(features: Dict) -> Dict:
+    """Generate enhanced prediction using multiple indicators.
+    
+    Uses weighted scoring across 5 categories:
+    - Trend (20%): slope, SMA, EMA
+    - Momentum (25%): RSI, MACD
+    - Volatility (20%): Bollinger Bands, ATR
+    - Trend Strength (20%): ADX
+    - Stochastic (15%): K/D crossover
+    
+    Args:
+        features: Dict with 20 technical indicators
+    
+    Returns:
+        Dict with prediction, confidence, signals, weights
+    """
     
     score = 0
     signals = []
@@ -306,8 +367,21 @@ def enhanced_prediction(features: dict) -> dict:
     }
 
 
-def generate_trading_levels(price: float, prediction: str, atr: float, volatility: dict) -> dict:
-    """Generate stop-loss and take-profit levels based on volatility."""
+def generate_trading_levels(price: float, prediction: str, atr: float, volatility: Dict) -> Dict:
+    """Generate stop-loss and take-profit levels based on volatility.
+    
+    Uses ATR (Average True Range) to dynamically adjust stop-loss levels
+    while maintaining a 1:2 risk/reward ratio.
+    
+    Args:
+        price: Current price
+        prediction: "Up" for LONG, "Down" for SHORT
+        atr: Average True Range value
+        volatility: Dict with ATR percent and other volatility metrics
+    
+    Returns:
+        Dict with stop_loss, take_profit, sl_percent, tp_percent
+    """
     
     # Volatility-adjusted levels
     atr_percent = volatility.get("atr_percent", 1.5)

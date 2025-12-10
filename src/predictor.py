@@ -11,6 +11,7 @@ stop-loss and take-profit levels.
 import argparse
 import sys
 from datetime import datetime
+from typing import Tuple, Dict
 
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
@@ -20,25 +21,35 @@ import yfinance as yf
 from sklearn.linear_model import LinearRegression
 
 
-def fetch_intraday(ticker: str, minutes: int = 20) -> tuple:
-    """Fetch intraday data and return both extended and recent windows."""
+def _normalize_timezone(df: pd.DataFrame) -> pd.DataFrame:
+    """Convert timezone-aware index to timezone-naive."""
+    if isinstance(df.index, pd.DatetimeIndex) and df.index.tz is not None:
+        df = df.tz_convert(None)
+    return df
+
+
+def fetch_intraday(ticker: str, minutes: int = 20) -> Tuple[pd.DataFrame, pd.DataFrame, float, float]:
+    """Fetch intraday data and return both extended and recent windows.
+    
+    Args:
+        ticker: Ticker symbol (e.g., 'AAPL')
+        minutes: Minutes of recent data to analyze (default 20)
+    
+    Returns:
+        Tuple of (recent_df, extended_df, day_high, day_low)
+    """
     t = yf.Ticker(ticker)
-    # Try to get 1m data for today (yfinance offers limited intraday window)
     df = t.history(period="1d", interval="1m", actions=False)
     if df.empty:
-        raise RuntimeError("No intraday data available for ticker: %s" % ticker)
-    # Ensure index is timezone-naive for plotting convenience
-    if isinstance(df.index, pd.DatetimeIndex):
-        df = df.tz_convert(None) if df.index.tz is not None else df
+        raise RuntimeError(f"No intraday data available for {ticker}")
     
-    # Get last 4 hours + 20 mins for chart display
-    extended_window = max(280, len(df))  # 4 hours 20 mins = 260 minutes, plus buffer
+    df = _normalize_timezone(df)
+    
+    # Get last 4 hours + 20 mins for chart display (260 minutes + buffer)
+    extended_window = max(280, len(df))
     df_extended = df.tail(extended_window)
-    
-    # Get last 20 minutes for analysis
     df_recent = df.tail(minutes)
     
-    # Calculate day's high and low
     day_high = float(df["High"].max())
     day_low = float(df["Low"].min())
     
@@ -46,22 +57,36 @@ def fetch_intraday(ticker: str, minutes: int = 20) -> tuple:
 
 
 def fetch_4hour(ticker: str, days: int = 5) -> pd.DataFrame:
+    """Fetch 4-hour OHLCV data.
+    
+    Args:
+        ticker: Ticker symbol
+        days: Number of days of historical data (default 5)
+    
+    Returns:
+        DataFrame with OHLCV data
+    """
     t = yf.Ticker(ticker)
-    # Get 4-hour data for the last few days
     df = t.history(period=f"{days}d", interval="4h", actions=False)
     if df.empty:
-        raise RuntimeError("No 4-hour data available for ticker: %s" % ticker)
-    # Ensure index is timezone-naive
-    if isinstance(df.index, pd.DatetimeIndex):
-        df = df.tz_convert(None) if df.index.tz is not None else df
-    return df
+        raise RuntimeError(f"No 4-hour data available for {ticker}")
+    return _normalize_timezone(df)
 
 
 def fetch_daily(ticker: str, days: int = 120) -> pd.DataFrame:
+    """Fetch daily OHLCV data.
+    
+    Args:
+        ticker: Ticker symbol
+        days: Number of days of historical data (default 120)
+    
+    Returns:
+        DataFrame with OHLCV data
+    """
     t = yf.Ticker(ticker)
     df = t.history(period=f"{days}d", interval="1d", actions=False)
     if df.empty:
-        raise RuntimeError("No daily data available for ticker: %s" % ticker)
+        raise RuntimeError(f"No daily data available for {ticker}")
     return df
 
 
@@ -72,49 +97,76 @@ def compute_sma(df_daily: pd.DataFrame):
     return float(sma20), float(sma50)
 
 
-def compute_intraday_features(df_min: pd.DataFrame):
-    prices = df_min["Close"].values
+def _compute_slope(prices: np.ndarray) -> float:
+    """Compute linear regression slope of prices."""
+    if len(prices) < 2:
+        return 0.0
     times = np.arange(len(prices)).reshape(-1, 1)
     lr = LinearRegression()
-    if len(prices) >= 2:
-        lr.fit(times, prices)
-        slope = float(lr.coef_[0])
-    else:
-        slope = 0.0
+    lr.fit(times, prices)
+    return float(lr.coef_[0])
+
+
+def compute_intraday_features(df_min: pd.DataFrame) -> Dict[str, float]:
+    """Compute features for intraday (1-minute) analysis.
+    
+    Args:
+        df_min: DataFrame with 1-minute OHLCV data
+    
+    Returns:
+        Dict with slope, last_return, avg_volume
+    """
+    prices = df_min["Close"].values
+    slope = _compute_slope(prices)
     last_return = (prices[-1] / prices[0] - 1.0) if len(prices) >= 2 else 0.0
     avg_volume = float(df_min["Volume"].mean()) if "Volume" in df_min.columns else 0.0
     return {"slope": slope, "last_return": last_return, "avg_volume": avg_volume}
 
 
-def compute_4h_features(df_4h: pd.DataFrame):
-    """Compute features for 4-hour timeframe analysis."""
+def compute_4h_features(df_4h: pd.DataFrame) -> Dict[str, float]:
+    """Compute features for 4-hour timeframe analysis.
+    
+    Args:
+        df_4h: DataFrame with 4-hour OHLCV data
+    
+    Returns:
+        Dict with slope, last_return, volatility, avg_volatility
+    """
     prices = df_4h["Close"].values
-    times = np.arange(len(prices)).reshape(-1, 1)
-    lr = LinearRegression()
-    if len(prices) >= 2:
-        lr.fit(times, prices)
-        slope = float(lr.coef_[0])
-    else:
-        slope = 0.0
+    slope = _compute_slope(prices)
     last_return = (prices[-1] / prices[0] - 1.0) if len(prices) >= 2 else 0.0
     volatility = float(df_4h["Close"].std())
     avg_volatility = float(df_4h["Close"].rolling(window=2).std().mean())
     return {"slope": slope, "last_return": last_return, "volatility": volatility, "avg_volatility": avg_volatility}
 
 
-def rule_based_prediction(features: dict, sma20: float, sma50: float, current_price: float):
+def rule_based_prediction(features: Dict, sma20: float, sma50: float, current_price: float) -> Dict:
+    """Generate prediction based on 20-minute timeframe.
+    
+    Args:
+        features: Dict with slope, last_return, avg_volume
+        sma20: 20-day simple moving average
+        sma50: 50-day simple moving average
+        current_price: Current price
+    
+    Returns:
+        Dict with prediction, score, reasons, stop_loss, take_profit
+    """
     score = 0
     reasons = []
+    
     if sma20 > sma50:
         score += 1
         reasons.append("20d SMA > 50d SMA (bullish)")
     else:
         reasons.append("20d SMA <= 50d SMA (bearish)")
+    
     if features["last_return"] > 0:
         score += 1
         reasons.append("positive last 20-min return")
     else:
         reasons.append("non-positive last 20-min return")
+    
     if features["slope"] > 0:
         score += 1
         reasons.append("upward intraday slope")
@@ -122,27 +174,41 @@ def rule_based_prediction(features: dict, sma20: float, sma50: float, current_pr
         reasons.append("non-positive intraday slope")
 
     prediction = "Up" if score >= 2 else "Down"
-
-    stop_loss = current_price * (1 - 0.05)
-    take_profit = current_price * (1 + 0.10)
+    stop_loss = current_price * 0.95  # -5%
+    take_profit = current_price * 1.10  # +10%
 
     return {"prediction": prediction, "score": score, "reasons": reasons, "stop_loss": stop_loss, "take_profit": take_profit}
 
 
-def rule_based_prediction_4h(features_4h: dict, current_price: float):
-    """Generate prediction based on 4-hour timeframe analysis."""
+def rule_based_prediction_4h(features_4h: Dict, current_price: float) -> Dict:
+    """Generate day trading strategy prediction based on 4-hour timeframe.
+    
+    Day trading strategy:
+    - LONG: 2% stop-loss, 4% take-profit
+    - SHORT: 5% stop-loss, 5% take-profit
+    
+    Args:
+        features_4h: Dict with slope, last_return, volatility, avg_volatility
+        current_price: Current price
+    
+    Returns:
+        Dict with prediction, score, reasons, stop_loss, take_profit
+    """
     score = 0
     reasons = []
+    
     if features_4h["slope"] > 0:
         score += 1
         reasons.append("upward 4h slope (bullish)")
     else:
         reasons.append("non-positive 4h slope (bearish)")
+    
     if features_4h["last_return"] > 0:
         score += 1
         reasons.append("positive 4h return")
     else:
         reasons.append("non-positive 4h return")
+    
     if features_4h["volatility"] < features_4h["avg_volatility"]:
         score += 1
         reasons.append("low volatility (consolidation)")
@@ -151,15 +217,13 @@ def rule_based_prediction_4h(features_4h: dict, current_price: float):
 
     prediction = "Up" if score >= 2 else "Down"
 
-    # Day trading strategy: 
-    # For Up (Long): 2% stop-loss below, 4% take-profit above
-    # For Down (Short): 5% stop-loss above, 5% take-profit below
+    # Set stop-loss and take-profit based on prediction
     if prediction == "Up":
-        stop_loss_4h = current_price * (1 - 0.02)
-        take_profit_4h = current_price * (1 + 0.04)
+        stop_loss_4h = current_price * 0.98  # -2%
+        take_profit_4h = current_price * 1.04  # +4%
     else:
-        stop_loss_4h = current_price * (1 + 0.05)  # Above price for short (-5%)
-        take_profit_4h = current_price * (1 - 0.05)  # Below price for short (+5%)
+        stop_loss_4h = current_price * 1.05  # +5% for short
+        take_profit_4h = current_price * 0.95  # -5% for short
 
     return {"prediction": prediction, "score": score, "reasons": reasons, "stop_loss": stop_loss_4h, "take_profit": take_profit_4h}
 

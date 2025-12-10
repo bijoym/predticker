@@ -1,46 +1,79 @@
 """Backtesting module for the market predictor.
 
-This script backtests the predictor on historical data to evaluate performance.
+This module backtests the predictor on historical data to evaluate performance.
 It simulates trades based on predictions and calculates key metrics.
 """
+
+from typing import Dict, List, Optional, Tuple
+from datetime import datetime, timedelta
 
 import pandas as pd
 import numpy as np
 import yfinance as yf
-from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 
 
-def fetch_historical_4h(ticker: str, days: int = 60) -> pd.DataFrame:
-    """Fetch historical 4-hour data."""
-    t = yf.Ticker(ticker)
-    df = t.history(period=f"{days}d", interval="4h", actions=False)
-    if df.empty:
-        raise RuntimeError(f"No data available for ticker: {ticker}")
-    if isinstance(df.index, pd.DatetimeIndex):
-        df = df.tz_convert(None) if df.index.tz is not None else df
+def _normalize_timezone(df: pd.DataFrame) -> pd.DataFrame:
+    """Convert timezone-aware index to timezone-naive."""
+    if isinstance(df.index, pd.DatetimeIndex) and df.index.tz is not None:
+        df = df.tz_convert(None)
     return df
 
 
-def compute_4h_features(df_4h: pd.DataFrame):
-    """Compute features for 4-hour timeframe analysis."""
-    prices = df_4h["Close"].values
+def _compute_slope(prices: np.ndarray) -> float:
+    """Compute linear regression slope of prices."""
+    if len(prices) < 2:
+        return 0.0
     times = np.arange(len(prices)).reshape(-1, 1)
     lr = LinearRegression()
-    if len(prices) >= 2:
-        lr.fit(times, prices)
-        slope = float(lr.coef_[0])
-    else:
-        slope = 0.0
+    lr.fit(times, prices)
+    return float(lr.coef_[0])
+
+
+def fetch_historical_4h(ticker: str, days: int = 60) -> pd.DataFrame:
+    """Fetch historical 4-hour data.
+    
+    Args:
+        ticker: Ticker symbol
+        days: Number of days of historical data (default 60)
+    
+    Returns:
+        DataFrame with 4-hour OHLCV data
+    """
+    t = yf.Ticker(ticker)
+    df = t.history(period=f"{days}d", interval="4h", actions=False)
+    if df.empty:
+        raise RuntimeError(f"No data available for {ticker}")
+    return _normalize_timezone(df)
+
+
+def compute_4h_features(df_4h: pd.DataFrame) -> Dict[str, float]:
+    """Compute features for 4-hour timeframe analysis.
+    
+    Args:
+        df_4h: DataFrame with 4-hour OHLCV data
+    
+    Returns:
+        Dict with slope, last_return, volatility, avg_volatility
+    """
+    prices = df_4h["Close"].values
+    slope = _compute_slope(prices)
     last_return = (prices[-1] / prices[0] - 1.0) if len(prices) >= 2 else 0.0
     volatility = float(df_4h["Close"].std())
     avg_volatility = float(df_4h["Close"].rolling(window=2).std().mean())
     return {"slope": slope, "last_return": last_return, "volatility": volatility, "avg_volatility": avg_volatility}
 
 
-def rule_based_prediction_4h(features_4h: dict):
-    """Generate prediction based on 4-hour timeframe analysis."""
+def rule_based_prediction_4h(features_4h: Dict) -> Tuple[str, int]:
+    """Generate prediction based on 4-hour timeframe analysis.
+    
+    Args:
+        features_4h: Dict with slope, last_return, volatility, avg_volatility
+    
+    Returns:
+        Tuple of (prediction, score)
+    """
     score = 0
     if features_4h["slope"] > 0:
         score += 1
