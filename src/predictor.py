@@ -117,7 +117,7 @@ def rule_based_prediction(features: dict, sma20: float, sma50: float, current_pr
     return {"prediction": prediction, "score": score, "reasons": reasons, "stop_loss": stop_loss, "take_profit": take_profit}
 
 
-def rule_based_prediction_4h(features_4h: dict):
+def rule_based_prediction_4h(features_4h: dict, current_price: float):
     """Generate prediction based on 4-hour timeframe analysis."""
     score = 0
     reasons = []
@@ -139,7 +139,16 @@ def rule_based_prediction_4h(features_4h: dict):
 
     prediction = "Up" if score >= 2 else "Down"
 
-    return {"prediction": prediction, "score": score, "reasons": reasons}
+    # Day trading strategy: 2% stop-loss, 4% take-profit for Up
+    # For Down: 1.5% stop-loss, 3% take-profit (more conservative)
+    if prediction == "Up":
+        stop_loss_4h = current_price * (1 - 0.02)
+        take_profit_4h = current_price * (1 + 0.04)
+    else:
+        stop_loss_4h = current_price * (1 + 0.015)  # Above price for short
+        take_profit_4h = current_price * (1 - 0.03)  # Below price for short
+
+    return {"prediction": prediction, "score": score, "reasons": reasons, "stop_loss": stop_loss_4h, "take_profit": take_profit_4h}
 
 
 def plot_intraday(df_min: pd.DataFrame, ticker: str, stop: float, take: float, prediction: str):
@@ -207,7 +216,7 @@ def main(argv=None):
     features_4h = compute_4h_features(df_4h)
     current_price = float(df_min["Close"].iloc[-1])
     result = rule_based_prediction(features, sma20, sma50, current_price)
-    result_4h = rule_based_prediction_4h(features_4h)
+    result_4h = rule_based_prediction_4h(features_4h, current_price)
 
     print("\n" + "="*60)
     print("20-MINUTE TIMEFRAME PREDICTION")
@@ -225,7 +234,7 @@ def main(argv=None):
     print(f"Suggested take-profit (10%): {result['take_profit']:.4f}")
 
     print("\n" + "="*60)
-    print("4-HOUR TIMEFRAME PREDICTION")
+    print("4-HOUR TIMEFRAME PREDICTION (DAY TRADING STRATEGY)")
     print("="*60)
     print(f"Ticker: {ticker}")
     print(f"Current price: {current_price:.4f}")
@@ -237,6 +246,19 @@ def main(argv=None):
     print("Reasons:")
     for r in result_4h["reasons"]:
         print(" -", r)
+    print("\nDAY TRADING LEVELS:")
+    if result_4h['prediction'] == "Up":
+        print(f"Strategy: LONG (Buy)")
+        print(f"Entry: {current_price:.4f}")
+        print(f"Stop-loss (2%): {result_4h['stop_loss']:.4f}")
+        print(f"Take-profit (4%): {result_4h['take_profit']:.4f}")
+        print(f"Risk/Reward Ratio: 1:{(result_4h['take_profit'] - current_price) / (current_price - result_4h['stop_loss']):.2f}")
+    else:
+        print(f"Strategy: SHORT (Sell)")
+        print(f"Entry: {current_price:.4f}")
+        print(f"Stop-loss (1.5%): {result_4h['stop_loss']:.4f}")
+        print(f"Take-profit (3%): {result_4h['take_profit']:.4f}")
+        print(f"Risk/Reward Ratio: 1:{(current_price - result_4h['take_profit']) / (result_4h['stop_loss'] - current_price):.2f}")
 
     print("\n" + "="*60)
     print("SUMMARY")
