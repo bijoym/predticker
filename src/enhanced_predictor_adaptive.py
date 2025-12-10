@@ -138,7 +138,11 @@ def compute_enhanced_features(df: pd.DataFrame) -> Dict[str, float]:
     
     # Price position
     price = df["Close"].iloc[-1]
-    current_position = (price - sma_50) / sma_50 if sma_50 != 0 else 0
+    # Handle NaN safely
+    if pd.isna(sma_50) or sma_50 == 0:
+        current_position = 0
+    else:
+        current_position = (price - sma_50) / sma_50
     
     # RSI
     rsi = calculate_rsi(df, 14).iloc[-1]
@@ -151,7 +155,13 @@ def compute_enhanced_features(df: pd.DataFrame) -> Dict[str, float]:
     
     # Bollinger Bands
     upper_bb, middle_bb, lower_bb = calculate_bollinger_bands(df, 20, 2.0)
-    bb_position = (price - lower_bb.iloc[-1]) / (upper_bb.iloc[-1] - lower_bb.iloc[-1]) if (upper_bb.iloc[-1] - lower_bb.iloc[-1]) != 0 else 0.5
+    upper_val = upper_bb.iloc[-1]
+    lower_val = lower_bb.iloc[-1]
+    bb_range = upper_val - lower_val
+    if pd.isna(bb_range) or bb_range == 0:
+        bb_position = 0.5
+    else:
+        bb_position = (price - lower_val) / bb_range
     
     # ATR and Volatility
     atr = calculate_atr(df, 14).iloc[-1]

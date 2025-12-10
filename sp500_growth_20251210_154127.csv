@@ -1,0 +1,547 @@
+Ticker,Current_Price,Prev_Close,Change_%,Growth_Probability_%,Momentum_5d_%,RSI,vs_SMA20_%,Volatility_%
+GOOGL,"Ticker
+GOOGL    316.76
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+GOOGL    317.08
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+GOOGL   -0.1
+dtype: float64",100.0,-0.2,67.8,3.71,2.08
+AMZN,"Ticker
+AMZN    231.47
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+AMZN    227.92
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+AMZN    1.56
+dtype: float64",100.0,1.03,61.9,0.72,2.11
+DIS,"Ticker
+DIS    107.21
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+DIS    107.02
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+DIS    0.18
+dtype: float64",100.0,1.65,57.4,1.29,1.44
+ADBE,"Ticker
+ADBE    342.9
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+ADBE    344.32
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+ADBE   -0.41
+dtype: float64",100.0,4.31,68.1,4.61,1.76
+V,"Ticker
+V    327.8
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+V    326.5
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+V    0.4
+dtype: float64",100.0,0.21,56.1,-0.5,1.09
+DLR,"Ticker
+DLR    162.85
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+DLR    162.76
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+DLR    0.06
+dtype: float64",100.0,1.14,57.9,1.95,1.58
+SCHW,"Ticker
+SCHW    94.54
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+SCHW    94.16
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+SCHW    0.41
+dtype: float64",100.0,-0.51,59.3,1.6,1.37
+NOW,"Ticker
+NOW    848.17
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+NOW    854.91
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+NOW   -0.79
+dtype: float64",100.0,1.11,62.8,1.98,1.55
+PEP,"Ticker
+PEP    147.49
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+PEP    144.64
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+PEP    1.97
+dtype: float64",100.0,1.38,56.7,1.27,1.23
+AVGO,"Ticker
+AVGO    402.86
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+AVGO    406.29
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+AVGO   -0.84
+dtype: float64",100.0,5.73,68.9,8.07,3.15
+ORCL,"Ticker
+ORCL    220.36
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+ORCL    221.53
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+ORCL   -0.53
+dtype: float64",100.0,2.81,46.0,3.67,5.3
+BA,"Ticker
+BA    200.1
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+BA    200.37
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+BA   -0.13
+dtype: float64",100.0,-0.88,63.7,3.86,2.12
+CSCO,"Ticker
+CSCO    79.18
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+CSCO    79.51
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+CSCO   -0.42
+dtype: float64",100.0,1.83,54.1,2.57,1.33
+CRM,"Ticker
+CRM    260.14
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+CRM    261.02
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+CRM   -0.34
+dtype: float64",100.0,5.12,80.1,8.49,2.14
+SIRI,"Ticker
+SIRI    21.89
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+SIRI    21.92
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+SIRI   -0.16
+dtype: float64",100.0,1.37,63.0,3.18,2.22
+ROKU,"Ticker
+ROKU    104.07
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+ROKU    105.56
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+ROKU   -1.41
+dtype: float64",100.0,10.08,68.7,6.75,2.48
+PINS,"Ticker
+PINS    27.05
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+PINS    27.18
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+PINS   -0.5
+dtype: float64",100.0,-0.68,66.0,2.88,3.42
+MU,"Ticker
+MU    253.33
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+MU    252.42
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+MU    0.36
+dtype: float64",100.0,11.77,63.2,8.27,3.84
+ASML,"Ticker
+ASML    1108.04
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+ASML    1111.44
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+ASML   -0.31
+dtype: float64",100.0,-0.18,60.7,5.26,2.29
+RBLX,"Ticker
+RBLX    97.86
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+RBLX    99.0
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+RBLX   -1.15
+dtype: float64",100.0,2.78,51.0,1.71,3.1
+DOCU,"Ticker
+DOCU    68.87
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+DOCU    69.39
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+DOCU   -0.75
+dtype: float64",100.0,-3.14,59.7,2.05,2.75
+NET,"Ticker
+NET    206.5
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+NET    208.93
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+NET   -1.16
+dtype: float64",100.0,1.15,60.6,2.22,2.88
+CCI,"Ticker
+CCI    90.47
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+CCI    90.2
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+CCI    0.3
+dtype: float64",100.0,2.1,47.3,0.33,1.29
+ZM,"Ticker
+ZM    87.91
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+ZM    87.63
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+ZM    0.32
+dtype: float64",100.0,1.54,68.6,4.52,1.91
+DASH,"Ticker
+DASH    225.1
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+DASH    229.99
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+DASH   -2.13
+dtype: float64",100.0,1.77,66.9,8.46,3.19
+COIN,"Ticker
+COIN    274.06
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+COIN    277.36
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+COIN   -1.19
+dtype: float64",100.0,0.0,57.9,2.45,3.89
+KLAC,"Ticker
+KLAC    1232.76
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+KLAC    1225.61
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+KLAC    0.58
+dtype: float64",100.0,2.04,63.1,5.39,2.48
+LRCX,"Ticker
+LRCX    164.81
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+LRCX    165.81
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+LRCX   -0.6
+dtype: float64",100.0,4.91,68.3,7.14,2.96
+PLTR,"Ticker
+PLTR    186.74
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+PLTR    181.84
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+PLTR    2.7
+dtype: float64",95.0,4.96,73.7,8.92,3.05
+RIOT,"Ticker
+RIOT    15.33
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+RIOT    15.51
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+RIOT   -1.16
+dtype: float64",95.0,-1.67,64.5,5.01,5.34
+GS,"Ticker
+GS    877.76
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+GS    876.58
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+GS    0.13
+dtype: float64",95.0,4.77,81.8,7.83,1.52
+MCHP,"Ticker
+MCHP    66.64
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+MCHP    66.85
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+MCHP   -0.32
+dtype: float64",95.0,2.96,87.8,18.17,2.82
+INTC,"Ticker
+INTC    39.15
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+INTC    40.5
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+INTC   -3.32
+dtype: float64",95.0,-3.32,60.3,3.08,4.35
+ABNB,"Ticker
+ABNB    125.02
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+ABNB    125.39
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+ABNB   -0.3
+dtype: float64",95.0,3.48,70.4,5.07,1.47
+TSM,"Ticker
+TSM    304.39
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+TSM    303.41
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+TSM    0.32
+dtype: float64",95.0,3.91,72.3,5.4,2.16
+MS,"Ticker
+MS    178.99
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+MS    178.83
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+MS    0.09
+dtype: float64",95.0,2.34,80.6,6.51,1.42
+NVDA,"Ticker
+NVDA    184.88
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+NVDA    184.97
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+NVDA   -0.05
+dtype: float64",90.0,0.82,47.8,0.91,2.26
+NVDA,"Ticker
+NVDA    184.67
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+NVDA    184.97
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+NVDA   -0.16
+dtype: float64",90.0,0.7,47.5,0.8,2.26
+AAPL,"Ticker
+AAPL    277.47
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+AAPL    277.18
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+AAPL    0.1
+dtype: float64",90.0,-1.15,64.1,0.63,1.39
+AFRM,"Ticker
+AFRM    68.46
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+AFRM    68.42
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+AFRM    0.06
+dtype: float64",90.0,-0.33,57.8,-0.17,3.82
+AMT,"Ticker
+AMT    180.18
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+AMT    179.55
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+AMT    0.35
+dtype: float64",90.0,0.76,49.2,0.1,1.27
+CRWD,"Ticker
+CRWD    513.79
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+CRWD    517.98
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+CRWD   -0.81
+dtype: float64",90.0,0.13,47.1,-0.39,2.47
+PFE,"Ticker
+PFE    25.33
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+PFE    25.33
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+PFE    0.0
+dtype: float64",90.0,-1.44,55.6,-0.3,1.81
+CMCSA,"Ticker
+CMCSA    26.89
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+CMCSA    26.79
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+CMCSA    0.35
+dtype: float64",90.0,-1.16,50.2,-0.62,1.38
+MA,"Ticker
+MA    541.62
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+MA    537.55
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+MA    0.76
+dtype: float64",90.0,-0.13,57.4,-0.22,1.13
+MARA,"Ticker
+MARA    12.01
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+MARA    12.25
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+MARA   -1.98
+dtype: float64",85.0,-3.48,58.0,1.9,5.12
+QCOM,"Ticker
+QCOM    176.86
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+QCOM    176.0
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+QCOM    0.49
+dtype: float64",85.0,1.44,70.6,4.47,2.36
+BLK,"Ticker
+BLK    1074.85
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+BLK    1071.31
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+BLK    0.33
+dtype: float64",85.0,0.42,71.0,3.07,1.4
+QCOM,"Ticker
+QCOM    176.74
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+QCOM    176.0
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+QCOM    0.42
+dtype: float64",85.0,1.37,70.5,4.4,2.36
+INTC,"Ticker
+INTC    39.1
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+INTC    40.5
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+INTC   -3.47
+dtype: float64",85.0,-3.47,60.2,2.93,4.35
+OKTA,"Ticker
+OKTA    87.38
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+OKTA    87.79
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+OKTA   -0.47
+dtype: float64",85.0,1.72,75.7,5.54,1.89
+ENPH,"Ticker
+ENPH    31.35
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+ENPH    31.55
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+ENPH   -0.63
+dtype: float64",85.0,1.92,80.7,8.52,3.8
+NXPI,"Ticker
+NXPI    226.6
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+NXPI    228.05
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+NXPI   -0.64
+dtype: float64",85.0,0.19,82.1,10.58,2.33
+MRVL,"Ticker
+MRVL    91.45
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+MRVL    88.9
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+MRVL    2.87
+dtype: float64",80.0,-6.86,61.5,3.99,3.42
+CDNS,"Ticker
+CDNS    337.05
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+CDNS    335.07
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+CDNS    0.59
+dtype: float64",75.0,-0.07,78.2,6.25,2.07
+DKNG,"Ticker
+DKNG    34.91
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+DKNG    34.94
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+DKNG   -0.09
+dtype: float64",75.0,-0.8,76.2,9.08,3.25
+SPOT,"Ticker
+SPOT    589.73
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+SPOT    589.67
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+SPOT    0.01
+dtype: float64",75.0,5.13,38.4,-1.3,1.75
+WMT,"Ticker
+WMT    114.67
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+WMT    115.06
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+WMT   -0.34
+dtype: float64",75.0,-0.15,79.2,5.78,1.41
+TSLA,"Ticker
+TSLA    445.91
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+TSLA    445.17
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+TSLA    0.17
+dtype: float64",75.0,-1.9,70.9,5.2,3.08
+META,"Ticker
+META    648.79
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+META    656.96
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+META   -1.24
+dtype: float64",75.0,-1.93,70.2,3.25,2.04
+IBM,"Ticker
+IBM    309.09
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+IBM    310.48
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+IBM   -0.45
+dtype: float64",75.0,0.36,76.0,1.94,1.78
+PLD,"Ticker
+PLD    128.22
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+PLD    127.45
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+PLD    0.6
+dtype: float64",75.0,0.03,76.8,1.5,1.32
+TXN,"Ticker
+TXN    178.71
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+TXN    179.52
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+TXN   -0.45
+dtype: float64",75.0,-0.78,75.8,6.65,1.89
+AMAT,"Ticker
+AMAT    268.5
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+AMAT    267.14
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+AMAT    0.51
+dtype: float64",75.0,-0.35,75.0,9.23,2.65
+JNJ,"Ticker
+JNJ    201.21
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+JNJ    199.96
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+JNJ    0.63
+dtype: float64",70.0,-0.63,49.9,-0.24,0.86
+SNPS,"Ticker
+SNPS    465.16
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+SNPS    465.85
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+SNPS   -0.15
+dtype: float64",70.0,0.31,91.5,10.33,5.41
+PYPL,"Ticker
+PYPL    60.49
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+PYPL    60.78
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+PYPL   -0.47
+dtype: float64",65.0,-2.0,51.7,-2.06,2.28
+HD,"Ticker
+HD    344.2
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+HD    345.27
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+HD   -0.31
+dtype: float64",65.0,-1.98,59.0,-1.47,1.39
+MRK,"Ticker
+MRK    96.9
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+MRK    96.89
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+MRK    0.02
+dtype: float64",65.0,-3.95,54.1,-1.54,1.99
+EQIX,"Ticker
+EQIX    742.76
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+EQIX    740.67
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+EQIX    0.28
+dtype: float64",65.0,2.3,38.3,-1.54,1.31
+LYFT,"Ticker
+LYFT    21.4
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+LYFT    21.78
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+LYFT   -1.74
+dtype: float64",65.0,-4.97,51.4,-1.25,3.66
+PSA,"Ticker
+PSA    266.5
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+PSA    264.71
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+PSA    0.68
+dtype: float64",65.0,-3.66,50.5,-1.82,1.22
+AXP,"Ticker
+AXP    365.78
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+AXP    363.91
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+AXP    0.51
+dtype: float64",65.0,-1.45,70.9,1.77,1.63
+SNAP,"Ticker
+SNAP    7.79
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+SNAP    7.92
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+SNAP   -1.6
+dtype: float64",65.0,0.43,40.1,-2.04,3.09
+AMD,"Ticker
+AMD    220.52
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+AMD    221.62
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+AMD   -0.5
+dtype: float64",60.0,2.1,47.8,-1.12,4.55
+AMD,"Ticker
+AMD    220.81
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+AMD    221.62
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+AMD   -0.37
+dtype: float64",60.0,2.24,48.0,-1.0,4.55
+RIVN,"Ticker
+RIVN    17.83
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+RIVN    17.71
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+RIVN    0.65
+dtype: float64",60.0,-1.3,87.6,8.7,4.26
+UPST,"Ticker
+UPST    46.02
+Name: 2025-12-10 00:00:00, dtype: float64","Ticker
+UPST    46.5
+Name: 2025-12-09 00:00:00, dtype: float64","Ticker
+UPST   -1.04
+dtype: float64",60.0,-2.36,72.8,10.49,4.26
