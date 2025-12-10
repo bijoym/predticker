@@ -40,11 +40,28 @@ result = enhanced_prediction_adaptive(features, optimizer, use_adaptive_weights=
 | `test_adaptive_weights.py` | Live prediction testing | `python test_adaptive_weights.py --tickers AAPL MSFT` |
 | `test_enhanced.py` | Multi-ticker analysis | `python test_enhanced.py AAPL MSFT GOOGL` |
 
+### 🏆 S&P 500 Growth Opportunity Scanner (NEW)
+
+**Find the best S&P 500 stocks with 2%+ growth probability daily!**
+
+| Tool | Purpose | Usage |
+|------|---------|-------|
+| `find_sp500_growth.py` | **Main Analyzer** - Scans 99 S&P 500 stocks | `python find_sp500_growth.py` |
+| `sp500_watchlist_manager.py` | Interactive watchlist manager | `python sp500_watchlist_manager.py top 20` |
+
+**Quick Results (Dec 10, 2025):**
+- ✅ 77 stocks with 2%+ growth probability
+- ✅ 88.2% average confidence
+- ✅ 27 stocks at 100% confidence
+- ✅ Top picks: GOOGL, AMZN, V, DIS, PEP
+
 ### 📚 Documentation
 
 | Document | Content |
 |----------|---------|
-| `PHASE_3_COMPLETION.md` | **START HERE** - Phase 3 summary |
+| `S500_QUICK_START.md` | **START HERE** - Quick start guide for S&P 500 scanner |
+| `SP500_GROWTH_ANALYSIS_20251210.md` | Detailed analysis with 77 stocks, sector breakdown |
+| `PHASE_3_COMPLETION.md` | Phase 3 ML adaptive weights summary |
 | `ML_ADAPTIVE_WEIGHTS_REPORT.md` | Technical implementation details |
 | `ADAPTIVE_WEIGHTS_GUIDE.md` | Quick-start guide with examples |
 | `ENHANCED_STRATEGY_REPORT.md` | Strategy comparison & analysis |
