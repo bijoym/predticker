@@ -378,8 +378,13 @@ def backtest_multiple_tickers(tickers: list, days: int = 60, initial_capital: fl
 
 
 if __name__ == "__main__":
-    # Test tickers
-    tickers = ["AAPL", "MSFT", "GOOGL", "AMZN", "TSLA"]
+    import argparse
+    
+    parser = argparse.ArgumentParser(description="Backtest market prediction strategy")
+    parser.add_argument("--days", type=int, default=60, help="Number of days of historical data (default 60)")
+    parser.add_argument("--capital", type=float, default=10000, help="Initial capital (default 10000)")
+    parser.add_argument("--tickers", nargs="+", default=["AAPL", "MSFT", "GOOGL", "AMZN", "TSLA"], help="Tickers to backtest")
+    args = parser.parse_args()
     
     # Run backtest
-    results = backtest_multiple_tickers(tickers, days=60, initial_capital=10000)
+    results = backtest_multiple_tickers(args.tickers, days=args.days, initial_capital=args.capital)
