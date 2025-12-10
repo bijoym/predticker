@@ -153,43 +153,111 @@ def rule_based_prediction_4h(features_4h: dict, current_price: float):
 
 def plot_intraday(df_min: pd.DataFrame, ticker: str, stop: float, take: float, prediction: str):
     plt.style.use("default")
-    fig, ax = plt.subplots(figsize=(10, 5))
+    fig, ax = plt.subplots(figsize=(14, 7))
     ax.grid(True, alpha=0.3)
-    ax.plot(df_min.index, df_min["Close"], label="Close", color="tab:blue")
-    ax.scatter(df_min.index[-1], df_min["Close"].iloc[-1], color=(0.2, 0.8, 0.2) if prediction == "Up" else (0.8, 0.2, 0.2), zorder=5)
-    ax.axhline(stop, color="red", linestyle="--", label="Stop-loss (5%)")
-    ax.axhline(take, color="green", linestyle="--", label="Take-profit (10%)")
-    ax.set_title(f"{ticker} — last {len(df_min)} minutes — Prediction: {prediction}")
-    ax.set_xlabel("Time")
-    ax.set_ylabel("Price")
-    ax.legend()
+    
+    # Plot historical price
+    ax.plot(df_min.index, df_min["Close"], label="Close Price", color="tab:blue", linewidth=2, marker="o", markersize=4)
+    
+    # Calculate trend for next 10 minutes
+    prices = df_min["Close"].values
+    times = np.arange(len(prices)).reshape(-1, 1)
+    lr = LinearRegression()
+    lr.fit(times, prices)
+    
+    # Project next 10 candles
+    future_times = np.arange(len(prices), len(prices) + 10).reshape(-1, 1)
+    future_prices = lr.predict(future_times)
+    
+    # Create future index (assuming 1-minute intervals)
+    last_time = df_min.index[-1]
+    future_index = pd.date_range(start=last_time + pd.Timedelta(minutes=1), periods=10, freq='1min')
+    
+    # Plot projection with color based on prediction
+    projection_color = (0.2, 0.8, 0.2) if prediction == "Up" else (0.8, 0.2, 0.2)
+    ax.plot(future_index, future_prices, label="10-min Projection", color=projection_color, linewidth=2, linestyle="--", marker="s", markersize=5, alpha=0.8)
+    
+    # Mark current price
+    ax.scatter(df_min.index[-1], df_min["Close"].iloc[-1], color="blue", s=100, zorder=5, label="Current Price")
+    
+    # Mark projected endpoint
+    ax.scatter(future_index[-1], future_prices[-1], color=projection_color, s=150, marker="*", zorder=6, label=f"Projected 10-min ({prediction})")
+    
+    # Add stop-loss and take-profit lines
+    ax.axhline(stop, color="red", linestyle="--", linewidth=1.5, label="Stop-loss (5%)")
+    ax.axhline(take, color="green", linestyle="--", linewidth=1.5, label="Take-profit (10%)")
+    
+    # Add shaded regions for buy/sell zones
+    if prediction == "Up":
+        ax.fill_between(df_min.index, df_min["Close"].min() - 10, df_min["Close"].max() + 10, alpha=0.05, color="green", label="Buy Zone")
+    else:
+        ax.fill_between(df_min.index, df_min["Close"].min() - 10, df_min["Close"].max() + 10, alpha=0.05, color="red", label="Sell Zone")
+    
+    ax.set_title(f"{ticker} — Last {len(df_min)} minutes + 10-min Projection — Prediction: {prediction}", fontsize=14, fontweight="bold")
+    ax.set_xlabel("Time", fontsize=12)
+    ax.set_ylabel("Price ($)", fontsize=12)
+    ax.legend(loc="best", fontsize=10)
+    
     # Format x-axis nicely
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
     fig.autofmt_xdate()
     plt.tight_layout()
     out_path = f"{ticker}_intraday.png"
-    plt.savefig(out_path)
+    plt.savefig(out_path, dpi=150)
     print(f"Saved chart to {out_path}")
     plt.show()
 
 
 def plot_4h(df_4h: pd.DataFrame, ticker: str, prediction: str):
-    """Plot 4-hour price data with prediction."""
+    """Plot 4-hour price data with prediction and trend projection."""
     plt.style.use("default")
-    fig, ax = plt.subplots(figsize=(12, 6))
+    fig, ax = plt.subplots(figsize=(14, 7))
     ax.grid(True, alpha=0.3)
-    ax.plot(df_4h.index, df_4h["Close"], label="Close", color="tab:purple", marker="o")
-    ax.scatter(df_4h.index[-1], df_4h["Close"].iloc[-1], color=(0.2, 0.8, 0.2) if prediction == "Up" else (0.8, 0.2, 0.2), s=100, zorder=5)
-    ax.set_title(f"{ticker} — 4-hour timeframe — Prediction: {prediction}")
-    ax.set_xlabel("Time")
-    ax.set_ylabel("Price")
-    ax.legend()
+    
+    # Plot historical price
+    ax.plot(df_4h.index, df_4h["Close"], label="Close Price", color="tab:purple", linewidth=2, marker="o", markersize=6)
+    
+    # Calculate trend for next 2 periods (extrapolate ~8 hours)
+    prices_4h = df_4h["Close"].values
+    times_4h = np.arange(len(prices_4h)).reshape(-1, 1)
+    lr_4h = LinearRegression()
+    lr_4h.fit(times_4h, prices_4h)
+    
+    # Project next 2 candles
+    future_times_4h = np.arange(len(prices_4h), len(prices_4h) + 2).reshape(-1, 1)
+    future_prices_4h = lr_4h.predict(future_times_4h)
+    
+    # Create future index (assuming 4-hour intervals)
+    last_time_4h = df_4h.index[-1]
+    future_index_4h = pd.date_range(start=last_time_4h + pd.Timedelta(hours=4), periods=2, freq='4h')
+    
+    # Plot projection with color based on prediction
+    projection_color = (0.2, 0.8, 0.2) if prediction == "Up" else (0.8, 0.2, 0.2)
+    ax.plot(future_index_4h, future_prices_4h, label="Trend Projection", color=projection_color, linewidth=2.5, linestyle="--", marker="s", markersize=8, alpha=0.8)
+    
+    # Mark current price
+    ax.scatter(df_4h.index[-1], df_4h["Close"].iloc[-1], color="purple", s=150, zorder=5, label="Current Price")
+    
+    # Mark projected endpoint
+    ax.scatter(future_index_4h[-1], future_prices_4h[-1], color=projection_color, s=200, marker="*", zorder=6, label=f"Projected Trend ({prediction})")
+    
+    # Add shaded regions
+    if prediction == "Up":
+        ax.fill_between(df_4h.index, df_4h["Close"].min() - 20, df_4h["Close"].max() + 20, alpha=0.05, color="green", label="Bullish Zone")
+    else:
+        ax.fill_between(df_4h.index, df_4h["Close"].min() - 20, df_4h["Close"].max() + 20, alpha=0.05, color="red", label="Bearish Zone")
+    
+    ax.set_title(f"{ticker} — 4-Hour Timeframe + Trend Projection — Prediction: {prediction}", fontsize=14, fontweight="bold")
+    ax.set_xlabel("Time", fontsize=12)
+    ax.set_ylabel("Price ($)", fontsize=12)
+    ax.legend(loc="best", fontsize=10)
+    
     # Format x-axis
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%m-%d %H:%M"))
     fig.autofmt_xdate()
     plt.tight_layout()
     out_path = f"{ticker}_4h.png"
-    plt.savefig(out_path)
+    plt.savefig(out_path, dpi=150)
     print(f"Saved 4-hour chart to {out_path}")
     plt.show()
 
